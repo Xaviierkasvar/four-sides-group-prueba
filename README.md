@@ -15,45 +15,58 @@ Este proyecto fue desarrollado como parte del proceso de selección para la posi
 ```
 ├── app
 │   ├── Console
+│   │   └── Commands
 │   ├── Exceptions
 │   ├── Http
-│   │   ├── Controllers
-│   │   │   ├── ForgotPasswordController.php   # Controlador para restablecimiento de contraseña
-│   │   │   ├── UserController.php                 # Controlador para gestión de usuarios
-│   │   │   └── ProfileController.php              # Controlador para gestión de perfiles
-│   │   ├── Middleware
-│   │   └── Requests
-│   │       └── UserPhotoRequest.php               # Validaciones para carga de fotos
-│   ├── Mail
-│   │   └── ResetPasswordMail.php                  # Email para recuperación de contraseña
-│   └── Models
-│       └── User.php                              # Modelo de usuario
-├── config
+│   │   ├── Controllers              # Controladores para gestionar las solicitudes
+│   │   └── Middleware               # Middleware para procesamiento de solicitudes
+│   ├── Mail                         # Clases para el envío de correos electrónicos
+│   ├── Models                       # Modelos de la aplicación
+│   ├── Observers                    # Observadores para modelos
+│   ├── Policies                     # Políticas de autorización
+│   ├── Providers                    # Proveedores de servicios
+│   └── Services                     # Servicios de la aplicación
+├── bootstrap
+│   └── cache
+├── config                           # Archivos de configuración
 ├── database
-│   ├── migrations
-│   │   └── 2023_xx_xx_create_users_table.php     # Migración para tabla de usuarios
-│   └── seeders
-│       └── UserSeeder.php                        # Seeder para usuarios de prueba
+│   ├── factories                    # Factories para tests
+│   ├── migrations                   # Migraciones de base de datos
+│   └── seeders                      # Seeders para datos iniciales
+├── docker                           # Configuración de Docker
+│   ├── mysql
+│   └── nginx
 ├── public
-│   └── profile_photos                            # Carpeta donde se almacenan las fotos
+│   ├── build
+│   │   └── assets
+│   ├── css
+│   ├── images
+│   │   └── profiles                 # Almacenamiento de imágenes de perfil
+│   └── js
 ├── resources
 │   ├── css
 │   ├── js
 │   └── views
 │       ├── auth
-│       │   ├── forgot-password.blade.php         # Vista para solicitar restablecimiento
-│       │   ├── reset-password.blade.php          # Vista para ingresar nueva contraseña
-│       │   └── verify-code.blade.php             # Vista para verificar código
-│       └── users
-│           ├── index.blade.php                   # Lista de usuarios
-│           ├── show.blade.php                    # Detalle de usuario
-│           └── upload-photo.blade.php            # Formulario para cargar foto
-├── routes
-│   ├── api.php
-│   └── web.php                                   # Definición de rutas
-├── docker-compose.yml                            # Configuración de Docker
-├── Dockerfile                                    # Instrucciones para construir la imagen
-└── entrypoint.sh                                 # Script de entrada para Docker
+│       │   └── passwords            # Vistas para la recuperación de contraseña
+│       ├── emails                   # Plantillas de correo electrónico
+│       ├── layouts                  # Plantillas maestras para las vistas
+│       └── users                    # Vistas para la gestión de usuarios
+├── routes                           # Definición de rutas
+├── storage
+│   ├── app
+│   │   ├── public
+│   │   │   └── profiles             # Almacenamiento de perfiles de usuario
+│   │   └── google-calendar
+│   ├── framework
+│   │   ├── cache
+│   │   ├── sessions
+│   │   ├── testing
+│   │   └── views
+│   └── logs
+└── tests
+    ├── Feature                      # Pruebas de características
+    └── Unit                         # Pruebas unitarias
 ```
 
 ## Rutas Principales
@@ -73,21 +86,26 @@ Este proyecto fue desarrollado como parte del proceso de selección para la posi
 
 ### UserController
 
-Maneja las operaciones CRUD relacionadas con usuarios:
+Maneja las operaciones relacionadas con usuarios:
 - `index()` - Muestra listado de usuarios
 - `show($id)` - Muestra detalle de un usuario
+- `create()` - Muestra formulario para crear usuario
+- `store(Request $request)` - Guarda nuevo usuario
+- `edit($id)` - Muestra formulario para editar usuario
+- `update(Request $request, $id)` - Actualiza datos de usuario
+- `destroy($id)` - Elimina usuario
 - `uploadPhotoForm($id)` - Muestra formulario para subir foto
-- `uploadPhoto(UserPhotoRequest $request, $id)` - Procesa y guarda la foto
+- `uploadPhoto(Request $request, $id)` - Procesa y guarda la foto
 
-### ForgotPasswordController
+### PasswordResetController
 
-Gestiona el proceso de recuperación de contraseña:
-- `showForgotPasswordForm()` - Muestra formulario inicial
-- `sendResetLink(Request $request)` - Envía correo con código
+Gestiona el proceso de recuperación de contraseña (Historia de Usuario HUPRU002):
+- `showForgotForm()` - Muestra formulario inicial
+- `sendResetCode(Request $request)` - Envía correo con código de validación
 - `showVerifyCodeForm()` - Muestra formulario para ingresar código
 - `verifyCode(Request $request)` - Valida el código ingresado
-- `showResetPasswordForm()` - Muestra formulario para nueva contraseña
-- `resetPassword(Request $request)` - Actualiza la contraseña
+- `showResetForm()` - Muestra formulario para nueva contraseña
+- `updatePassword(Request $request)` - Actualiza la contraseña
 
 ## Migraciones y Seeders
 
@@ -96,14 +114,12 @@ La migración principal añade campos necesarios a la tabla de usuarios:
 - `usuarioPassword` - Contraseña del usuario
 - `profile_photo_path` - Ruta a la imagen de perfil
 
-El seeder (`UserSeeder.php`) crea usuarios de prueba para facilitar la evaluación.
-
 ## Credenciales de Prueba
 
 | Usuario | Correo | Contraseña |
 |---------|--------|------------|
 | admin   | admin@mail.com | admin123 |
-| user   | user@mail.com | admin123 |
+| user    | user@mail.com | admin123 |
 
 ## Instalación
 
@@ -120,43 +136,12 @@ El seeder (`UserSeeder.php`) crea usuarios de prueba para facilitar la evaluaci�
    cp .env.example .env
    ```
 
-3. Configurar variables de entorno en el archivo `.env`:
-   ```
-   DB_CONNECTION=mysql
-   DB_HOST=db
-   DB_PORT=3306
-   DB_DATABASE=fsg_prueba
-   DB_USERNAME=root
-   DB_PASSWORD=
-   
-   MAIL_MAILER=smtp
-   MAIL_HOST=mailhog
-   MAIL_PORT=1025
-   MAIL_USERNAME=null
-   MAIL_PASSWORD=null
-   MAIL_ENCRYPTION=null
-   MAIL_FROM_ADDRESS=no-reply@example.com
-   ```
-
-4. Iniciar los contenedores:
+3. Iniciar los contenedores:
    ```bash
-   docker-compose up -d
+   docker-compose up --build -d 
    ```
 
-5. Acceder al shell del contenedor:
-   ```bash
-   docker-compose exec app bash
-   ```
-
-6. Dentro del contenedor, instalar dependencias y configurar la aplicación:
-   ```bash
-   composer install
-   php artisan key:generate
-   php artisan migrate --seed
-   php artisan storage:link
-   ```
-
-7. Acceder a la aplicación en http://localhost:8000
+4. Acceder a la aplicación en http://localhost:8000
 
 ### Opción 2: Sin Docker
 
