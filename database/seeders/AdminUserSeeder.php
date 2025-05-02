@@ -25,7 +25,7 @@ class AdminUserSeeder extends Seeder
         // 2) Creamos un usuario normal; lo “crea” el admin
         User::create([
             'name'       => 'Usuario Normal',
-            'email'      => 'user@mail.com',
+            'email'      => 'xaviierkasvar.fjcb@gmail.com',
             'password'   => Hash::make('admin123'),
             'is_admin'   => false,
             'created_by' => $admin->id,

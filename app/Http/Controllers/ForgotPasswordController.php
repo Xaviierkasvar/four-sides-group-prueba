@@ -7,11 +7,19 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ForgotPasswordController extends Controller
 {
+    /**
+     * URL de la API de EmailJS
+     *
+     * @var string
+     */
+    protected $apiUrl = 'https://api.emailjs.com/api/v1.0/email/send';
+
     /**
      * Mostrar el formulario para solicitar el restablecimiento de contraseña.
      */
@@ -21,7 +29,8 @@ class ForgotPasswordController extends Controller
     }
 
     /**
-     * Enviar el correo con el código de verificación.
+     * Enviar el correo con el código de verificación utilizando EmailJS.
+     * También muestra el código en pantalla para facilitar las pruebas.
      */
     public function sendResetLinkEmail(Request $request)
     {
@@ -52,15 +61,21 @@ class ForgotPasswordController extends Controller
                 ]
             );
 
-            // En lugar de enviar un correo, almacenamos el código en la sesión para pruebas
-            // En un entorno de producción, aquí se enviaría el correo
+            // Enviar el código por correo utilizando EmailJS
+            $this->sendEmailWithCode($user, $verificationCode);
+            
+            // Para propósitos de prueba, almacenamos el código en la sesión
             session()->flash('verification_code', $verificationCode);
             
             // Almacenar email y token en la sesión para uso posterior
             session(['email' => $request->email, 'token' => $token]);
 
+            // Mensaje que incluye el código para facilitar las pruebas
+            $message = 'Hemos enviado un código de verificación a su correo electrónico. '.
+                       'Para facilitar las pruebas, el código es: ' . $verificationCode;
+
             return redirect()->route('password.code')
-                ->with('status', 'Hemos generado un código de verificación. Para pruebas, el código es: ' . $verificationCode);
+                ->with('status', $message);
         } catch (\Exception $e) {
             // Registrar el error para depuración
             Log::error('Error en recuperación de contraseña: ' . $e->getMessage());
@@ -68,6 +83,74 @@ class ForgotPasswordController extends Controller
             return back()->withErrors([
                 'email' => 'Ocurrió un error al procesar la solicitud. Por favor, intente nuevamente.',
             ]);
+        }
+    }
+
+    /**
+     * Enviar correo con código de verificación usando EmailJS
+     * 
+     * @param User $user
+     * @param string $code
+     * @return bool
+     */
+    protected function sendEmailWithCode($user, $code)
+    {
+        try {
+            // Obtener configuración de EmailJS desde el archivo .env
+            $serviceId = env('EMAILJS_SERVICE_ID');
+            $templateId = env('EMAILJS_TEMPLATE_ID');
+            $userId = env('EMAILJS_API_KEY');
+            
+            // Preparar datos para la plantilla
+            $data = [
+                'service_id' => $serviceId,
+                'template_id' => $templateId,
+                'user_id' => $userId,
+                'template_params' => [
+                    'user_name' => $user->name ?? 'Usuario',
+                    'user_email' => $user->email,
+                    'verification_code' => $code
+                ]
+            ];
+            
+            // Registrar lo que estamos enviando
+            Log::debug('Enviando solicitud a EmailJS', [
+                'email' => $user->email,
+                'service_id' => $serviceId,
+                'template_id' => $templateId
+            ]);
+            
+            // Enviar solicitud a EmailJS
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Origin' => 'https://www.emailjs.com',
+                'Referer' => 'https://www.emailjs.com',
+            ])->post($this->apiUrl, $data);
+            
+            // Verificar la respuesta
+            if ($response->successful()) {
+                Log::info('Código de verificación enviado por email', [
+                    'email' => $user->email
+                ]);
+                
+                return true;
+            } else {
+                Log::error('Error en la respuesta de EmailJS', [
+                    'email' => $user->email,
+                    'response' => $response->body()
+                ]);
+                
+                // No marcar como error para continuar con el flujo
+                return false;
+            }
+        } catch (\Exception $e) {
+            Log::error('Excepción al enviar correo con EmailJS', [
+                'email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+            
+            // No marcar como error para continuar con el flujo
+            return false;
         }
     }
 
@@ -100,14 +183,37 @@ class ForgotPasswordController extends Controller
         }
 
         try {
+            // Añadir logs de depuración
+            Log::debug('Verificando código', [
+                'email' => $email,
+                'código_ingresado' => $request->verification_code
+            ]);
+            
             $resetData = DB::table('password_reset_tokens')
                 ->where('email', $email)
                 ->where('verification_code', $request->verification_code)
                 ->first();
 
+            if ($resetData) {
+                Log::debug('Datos encontrados', [
+                    'código_almacenado' => $resetData->verification_code,
+                    'fecha_creación' => $resetData->created_at
+                ]);
+            } else {
+                Log::debug('No se encontraron datos con el código proporcionado');
+            }
+
             if (!$resetData) {
                 return back()->withErrors([
                     'verification_code' => 'El código ingresado es incorrecto',
+                ]);
+            }
+
+            // Verificar que el código no tenga más de 15 minutos
+            $createdAt = Carbon::parse($resetData->created_at);
+            if ($createdAt->diffInMinutes(Carbon::now()) > 15) {
+                return back()->withErrors([
+                    'verification_code' => 'El código ha expirado. Por favor, solicite uno nuevo.',
                 ]);
             }
 
@@ -121,6 +227,82 @@ class ForgotPasswordController extends Controller
             return back()->withErrors([
                 'verification_code' => 'Ocurrió un error al verificar el código. Por favor, intente nuevamente.',
             ]);
+        }
+    }
+
+    /**
+     * Mostrar el formulario para restablecer la contraseña.
+     */
+    public function showResetForm(Request $request, $token)
+    {
+        $email = session('email');
+        
+        if (!$email) {
+            return redirect()->route('password.request');
+        }
+        
+        return view('auth.passwords.reset', [
+            'token' => $token,
+            'email' => $email
+        ]);
+    }
+
+    /**
+     * Restablecer la contraseña.
+     */
+    public function reset(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        try {
+            // Verificar el token almacenado en la base de datos
+            $tokenData = DB::table('password_reset_tokens')
+                ->where('email', $request->email)
+                ->where('token', $request->token)
+                ->first();
+
+            if (!$tokenData) {
+                return redirect()->route('password.request')
+                    ->withErrors(['email' => 'Token inválido o expirado.']);
+            }
+
+            // Verificar que el token no tenga más de 15 minutos de antigüedad
+            $createdAt = Carbon::parse($tokenData->created_at);
+            if ($createdAt->diffInMinutes(Carbon::now()) > 15) {
+                DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+                
+                return redirect()->route('password.request')
+                    ->withErrors(['email' => 'El token ha expirado. Por favor, solicite uno nuevo.']);
+            }
+
+            // Actualizar la contraseña del usuario
+            $user = User::where('email', $request->email)->first();
+            
+            if (!$user) {
+                return redirect()->route('password.request')
+                    ->withErrors(['email' => 'No se encontró un usuario con ese correo electrónico.']);
+            }
+
+            $user->password = bcrypt($request->password);
+            $user->save();
+
+            // Eliminar el token de restablecimiento
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+            // Limpiar la sesión
+            session()->forget(['email', 'token']);
+
+            return redirect()->route('login')
+                ->with('status', 'Contraseña Restablecida');
+        } catch (\Exception $e) {
+            Log::error('Error al restablecer contraseña: ' . $e->getMessage());
+            
+            return redirect()->back()
+                ->withErrors(['email' => 'Ocurrió un error al restablecer la contraseña. Por favor, intente nuevamente.']);
         }
     }
 }
