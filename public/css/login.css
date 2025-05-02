@@ -1,0 +1,117 @@
+.alert-error {
+    background-color: #ffeeee;
+    border-left: 4px solid #ff6666;
+    color: #dd3333;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    
+    p {
+        margin: 0;
+    }
+}
+
+body {
+    background-color: #00574B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.login-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 25px;
+    
+    img {
+        max-width: 320px;
+    }
+}
+
+.welcome {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.password-container {
+    position: relative;
+    
+    .form-control {
+        padding-right: 40px;
+    }
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.password-eye {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'%3E%3C/path%3E%3Ccircle cx='12' cy='12' r='3'%3E%3C/circle%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    
+    &.hide {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'%3E%3C/path%3E%3Ccircle cx='12' cy='12' r='3'%3E%3C/circle%3E%3Cline x1='3' y1='3' x2='21' y2='21'%3E%3C/line%3E%3C/svg%3E");
+    }
+}
+
+.login-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #5DD39E;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    
+    &:hover {
+        background-color: #4DC38E;
+    }
+}

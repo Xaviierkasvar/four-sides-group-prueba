@@ -1,0 +1,645 @@
+@import 'bootstrap/scss/bootstrap';
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Estilos para el navbar horizontal */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #025940;
+    color: white;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-title {
+    margin: 0;
+}
+
+/* Estilos para el botón de hamburguesa con las 3 líneas correctamente visibles */
+.navbar-toggler {
+    border: 2px solid white !important;
+    border-radius: 4px !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    width: 40px !important;
+    height: 34px !important;
+    position: relative !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Contenedor para las líneas */
+.navbar-toggler-inner {
+    width: 24px;
+    height: 18px;
+    position: relative;
+}
+
+/* Oculta el ícono original de Bootstrap */
+.navbar-toggler .navbar-toggler-icon {
+    display: none !important;
+}
+
+/* Primera línea (arriba) */
+.navbar-toggler .line-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+}
+
+/* Segunda línea (medio) */
+.navbar-toggler .line-middle {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+}
+
+/* Tercera línea (abajo) */
+.navbar-toggler .line-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 24px;
+    height: 2px;
+    background-color: white;
+}
+
+/* Eliminar el contorno al hacer clic */
+.navbar-toggler:focus,
+.navbar-toggler:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: white !important;
+}
+
+/* Estilos para el menú lateral */
+.sidebar {
+    width: 250px;
+    background-color: #f8f9fa;
+    position: fixed;
+    top: 50px;
+    left: -250px;
+    height: calc(100% - 50px);
+    transition: left 0.3s ease;
+    padding-top: 50px; /* Aumentado para dar espacio al botón */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    width: 100%;
+    padding: 0; /* Eliminado el padding del li */
+}
+
+.sidebar li a {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.sidebar li a:hover {
+    background-color: #6CD99B;
+}
+
+/* Estilos para el botón de cerrar */
+.close-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    padding: 8px 12px;
+    z-index: 1001; /* Asegura que esté por encima de otros elementos */
+}
+
+.sidebar.active + .page-container {
+    margin-left: 250px;
+}
+
+/* Clase para los elementos del menú */
+.menu-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 200px;
+    }
+    .user-logo {
+        width: 35px;
+        height: 35px;
+    }
+    .sidebar.active + .dashboard-container {
+        margin-left: 200px;
+    }
+}
+
+/* resources/css/layouts/navbar.css */
+
+.sidebar li button:hover {
+    background-color: #6CD99B;
+}
+
+/* Estilos para el perfil de usuario en el sidebar */
+.sidebar-user-profile {
+    padding: 20px 15px;
+    border-bottom: 1px solid #f1f1f1;
+    margin-bottom: 15px;
+}
+
+.user-dropdown-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #333;
+}
+
+.user-role {
+    font-size: 12px;
+    color: #777;
+}
+
+.dropdown-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.chevron-down-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    transition: transform 0.3s ease;
+}
+
+.dropdown-toggle-btn.active .chevron-down-icon {
+    transform: rotate(-135deg);
+}
+
+/* Estilos para el menú */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.sidebar-menu-item {
+    width: 100%;
+}
+
+/* NUEVO - Estilos optimizados para la alineación de iconos con texto */
+.sidebar-link, .logout-button {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.3s;
+    width: 100%;
+    border: none;
+    text-align: left;
+    background: none;
+}
+
+.sidebar-link:hover, .logout-button:hover {
+    background-color: #6CD99B;
+}
+
+/* Mejora para alineación de iconos */
+.menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    background-position: center;
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+}
+
+/* Iconos específicos */
+.home-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z'%3E%3C/path%3E%3Cpolyline points='9 22 9 12 15 12 15 22'%3E%3C/polyline%3E%3C/svg%3E");
+}
+
+.question-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cpath d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'%3E%3C/path%3E%3Cline x1='12' y1='17' x2='12.01' y2='17'%3E%3C/line%3E%3C/svg%3E");
+}
+
+.users-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='9' cy='7' r='4'%3E%3C/circle%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'%3E%3C/path%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.equipment-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3'%3E%3C/circle%3E%3Cpath d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.tasks-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='8' y1='6' x2='21' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='12' x2='21' y2='12'%3E%3C/line%3E%3Cline x1='8' y1='18' x2='21' y2='18'%3E%3C/line%3E%3Cline x1='3' y1='6' x2='3.01' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='12' x2='3.01' y2='12'%3E%3C/line%3E%3Cline x1='3' y1='18' x2='3.01' y2='18'%3E%3C/line%3E%3C/svg%3E");
+}
+
+.logout-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4'%3E%3C/path%3E%3Cpolyline points='16 17 21 12 16 7'%3E%3C/polyline%3E%3Cline x1='21' y1='12' x2='9' y2='12'%3E%3C/line%3E%3C/svg%3E");
+}
+
+/* Texto del menú */
+.menu-item {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Estilos para el logo del usuario en el navbar */
+.user-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #5DD39E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Estilo para el contenido principal */
+.page-container {
+    transition: margin-left 0.3s ease;
+    margin-top: 60px;
+    padding: 20px;
+}
+
+.sidebar-active {
+    margin-left: 250px;
+}
+
+/* Para el botón verde que aparece en la imagen */
+.help-icon-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #5DD39E;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.help-icon-btn .question-mark {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Estilos para el dashboard */
+.welcome-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+/* Estilos para las cards de estadísticas */
+.stats-cards .card {
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.stat-card .card-body {
+    padding: 20px;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.client-icon {
+    background-color: rgba(98, 230, 177, 0.15);
+    color: #5DD39E;
+}
+
+.task-icon {
+    background-color: rgba(98, 177, 230, 0.15);
+    color: #62B1E6;
+}
+
+.staff-icon {
+    background-color: rgba(98, 230, 177, 0.15);
+    color: #5DD39E;
+}
+
+.stat-label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.stat-change {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.increase {
+    color: #5DD39E;
+}
+
+.decrease {
+    color: #FF7D7D;
+}
+
+/* Estilos para el grupo de avatares */
+.avatar-group {
+    display: flex;
+    margin-top: 5px;
+}
+
+.avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: #666;
+    margin-left: -8px;
+    border: 2px solid #fff;
+}
+
+.avatar:first-child {
+    margin-left: 0;
+}
+
+/* Estilos para la tabla de clientes */
+.table-card {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.table-card .card-header {
+    background-color: #fff;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-box {
+    position: relative;
+    width: 250px;
+}
+
+.search-input {
+    border-radius: 8px;
+    padding-left: 35px;
+    background-color: #f5f5f5;
+    border: 1px solid #f0f0f0;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.create-client-btn {
+    background-color: #5DD39E;
+    border-color: #5DD39E;
+    border-radius: 8px;
+    padding: 8px 15px;
+}
+
+.client-table {
+    margin-bottom: 0;
+}
+
+.client-table thead th {
+    background-color: #f9f9f9;
+    padding: 12px 15px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.client-table tbody td {
+    padding: 15px;
+    font-size: 14px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-badge.active {
+    background-color: rgba(93, 211, 158, 0.15);
+    color: #5DD39E;
+}
+
+.status-badge.inactive {
+    background-color: rgba(255, 125, 125, 0.15);
+    color: #FF7D7D;
+}
+
+/* Estilos para la paginación */
+.card-footer {
+    background-color: #fff;
+    padding: 15px 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.pagination-info {
+    font-size: 14px;
+    color: #666;
+    margin-left: 2%;
+}
+
+.pagination .page-link {
+    color: #333;
+    border: 1px solid #dee2e6;
+    padding: 5px 10px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #5DD39E;
+    border-color: #5DD39E;
+}
+
+/* ESTILOS NUEVOS PARA TABLAS Y MODALES */
+
+/* Estilos para las tablas de datos con hover en #6CD99B */
+.table-hover tbody tr:hover {
+    background-color: #6CD99B !important;
+    color: #fff !important;
+}
+
+/* Para asegurar que todas las celdas y enlaces dentro de la fila se vean bien al pasar el mouse */
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover a,
+.table-hover tbody tr:hover span,
+.table-hover tbody tr:hover button {
+    color: #fff !important;
+}
+
+/* Centrar la tabla */
+.table-responsive {
+    display: flex;
+    justify-content: center;
+}
+
+/* Alineación central para la columna de acciones */
+.table th:last-child,
+.table td:last-child {
+    text-align: center;
+}
+
+/* Estilo para los botones en grupo */
+.btn-group .btn {
+    border-radius: 0;
+}
+
+/* Ajustar los bordes redondeados para el primer y último botón */
+.btn-group .btn:first-child {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.btn-group .btn:last-child {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+/* Alinear el texto a la izquierda en los formularios de modales */
+.modal-body .form-label {
+    text-align: left;
+    display: block;
+}
+
+/* Estilo para botones de acción principal (crear y actualizar) */
+.btn-action-primary {
+    background-color: #025940;
+    color: white;
+}
+
+.btn-action-primary:hover {
+    background-color: #014732;
+    color: white;
+}
+
+/* Contenedores de modales mejor espaciados */
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Estilos para texto alineado a la izquierda en los formularios */
+.text-start label {
+    text-align: left;
+    display: block;
+}
+
+/* Ajustes para tabla responsiva en móviles */
+@media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .btn-group .btn {
+        padding: .25rem .5rem;
+        font-size: .875rem;
+    }
+}
+
+.note-container {
+    width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tab-pane:not(.active) {
+    display: none;
+  }

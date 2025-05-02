@@ -1,0 +1,50 @@
+version: '3'
+services:
+  # PHP / Laravel App
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        user: laravel
+        uid: 1000
+    image: fsg-prueba-app
+    container_name: fsg_prueba_app
+    restart: unless-stopped
+    working_dir: /var/www
+    env_file:
+      - ./.env
+    volumes:
+      - ./:/var/www
+    ports:
+      - "8000:8000"        # Host 8000 → Container 8000
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    networks:
+      - fsg_prueba_net
+    depends_on:
+      - db
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: fsg_prueba_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      TZ: America/Bogota
+    ports:
+      - "3306:3306"        # Host 3306 → Container 3306
+    volumes:
+      - fsg_prueba_mysql_data:/var/lib/mysql
+    networks:
+      - fsg_prueba_net
+
+networks:
+  fsg_prueba_net:
+    driver: bridge
+
+volumes:
+  fsg_prueba_mysql_data:
+    driver: local
